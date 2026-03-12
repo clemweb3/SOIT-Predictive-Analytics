@@ -6,3 +6,4 @@ textblob==0.17.1
 matplotlib==3.8.2
 seaborn==0.13.2
 ipykernel
+imbalanced-learn==0.12.0
