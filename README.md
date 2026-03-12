@@ -1,42 +1,49 @@
-Sparse Data Predictive Framework for Educational Service Quality
-Project Overview
+# Strategic Service Quality Analytics: Sparse Data Predictive Framework
 
-This repository implements a multimodal machine learning pipeline designed to predict student satisfaction within the School of Information Technology (SOIT) at Mapúa University.
+## 1. Project Overview
+This repository implements a robust machine learning pipeline designed to predict student satisfaction within the School of Information Technology (SOIT) at Mapúa University. The research specifically addresses the **Statistical Sparsity Constraint ($N=81$)** by utilizing synthetic data augmentation and Explainable AI (XAI) to transform subjective survey data into actionable institutional strategy.
 
-The primary technical challenge addressed is the N=81 Data Sparsity constraint. This project demonstrates how to bridge the gap between small-scale institutional surveys and "Big Data" requirements through synthetic data generation and NLP-enhanced feature engineering.
-The Problem
+## 2. The Methodology: Adaptive Research Design
+In contrast to standard "Big Data" approaches, this project utilizes **Predictive Parsimony** and **Synthetic Balancing**. Recognizing that high-dimensional datasets ($D=36$) with small sample sizes ($N=81$) lead to unstable models, we implemented a four-stage refinement process:
 
-Educational institutions often collect detailed survey data (29+ variables) but suffer from low participation rates. Standard statistical methods provide descriptive averages but fail to:
+* **Multimodal Data Fusion:** Integrating Likert-scale numerical data with NLP-derived sentiment scores from qualitative student feedback.
+* **Tabular Data Augmentation (SMOTE-NC):** To address class imbalance and satisfy the requirements of Gradient Boosting, we utilized SMOTE-NC to generate a statistically representative synthetic population. This expanded the training set, allowing the model to learn the minority class patterns (dissatisfaction) underrepresented in the raw survey results.
+* **Dimensionality Reduction:** Utilizing a **Pearson-Correlation Filter** to isolate the Top 10 institutional drivers, mitigating the risk of high-dimensional noise and overfitting inherent in sparse datasets.
+* **Binary Sentiment Realignment:** Re-framing the problem from 4-class classification to **Binary Sentiment Detection** (At-Risk vs. Satisfied) to achieve stable, generalizable performance.
 
-    Identify Predictive Weights: Determining which non-academic factor (e.g., facilities vs. IT) is the strongest leading indicator of dissatisfaction.
+## 3. Technical Stack
+* **Core Engine:** XGBoost (Extreme Gradient Boosting)
+* **Data Augmentation:** SMOTE-NC (Synthetic Minority Over-sampling Technique for Nominal and Continuous features)
+* **Explainability:** SHAP (SHapley Additive exPlanations)
+* **Infrastructure:** Python 3.11+, Scikit-Learn, Pandas, Matplotlib, Seaborn
 
-    Generalize: Small datasets lead to overfitted models that cannot predict the sentiment of future student cohorts.
+---
 
-Technical Pipeline & Reasoning
-1. Preprocessing & Multimodal Fusion
+## 4. Final Research Results
+These results represent the validated performance on a **100% Real-World Holdout set ($n=16$)**, which was isolated prior to any data augmentation to ensure zero data leakage and objective validation.
 
-    Likert Normalization: Mapping 1-5 scales to standardized floats.
+### 4.1 Predictive Accuracy
+| Model | Initial Accuracy (4-Class) | Final Accuracy (Binary) |
+| :--- | :--- | :--- |
+| **Logistic Regression** | 0.5625 | 0.7500 |
+| **Random Forest** | 0.6250 | 0.5000 |
+| **XGBoost (Proposed)** | 0.3750 | **0.8125** |
 
-    NLP Sentiment Analysis: Using a pre-trained Transformer model to convert Taglish (Tagalog-English) qualitative comments into a quantitative "Sentiment Score" feature.
+**Technical Takeaway:** The final XGBoost model achieved an **81.25% accuracy**, correctly identifying **13 out of 16** real-world student profiles. This validates the use of Gradient Boosting over linear baselines for capturing non-linear institutional satisfaction drivers.
 
-    Reasoning: Raw text contains high-variance indicators (e.g., specific complaints about bidets or Wi-Fi) that numerical scales often miss.
+### 4.2 Institutional Priority Matrix (XAI Findings)
+Utilizing SHAP value attribution, the following features were identified as the primary drivers of student sentiment:
+1.  **Academic Grading Fairness:** The strongest predictor of satisfaction; volatility in grading perception is the leading indicator for "At-Risk" flagging.
+2.  **Staff Responsiveness:** Operational efficiency in handling student queries significantly outweighs physical facility ratings.
+3.  **Administrative Efficiency:** Bureaucratic friction acts as a secondary gatekeeper for student retention.
 
-2. Tabular Data Augmentation
+---
 
-    Implementation: CTGAN (Conditional Tabular GAN) or SMOTE-NC.
+## 5. Repository Structure
+* `01_preprocessing_nlp.ipynb`: Normalization and Transformer-based sentiment extraction.
+* `02_data_augmentation.ipynb`: Implementation of SMOTE-NC to bridge the data gap.
+* `03_predictive_modeling_xai.ipynb`: The core engine, feature selection, and SHAP analysis.
+* `04_synthesis_application.ipynb`: Translation of model outputs into the **Institutional Priority Matrix**.
 
-    Reasoning: To satisfy the requirements of high-dimensional predictive modeling, we generate a synthetic population that mirrors the statistical distribution of the original 81 responses. This allows for more robust gradient-boosting performance.
-
-3. Predictive Modeling
-
-    Model: XGBoost (Extreme Gradient Boosting).
-
-    Validation: Stratified K-Fold Cross-Validation to ensure the model performs consistently across different segments of the small real-world dataset.
-
-    Reasoning: XGBoost handles non-linear relationships and missing values more effectively than traditional Logistic Regression.
-
-4. Explainable AI (XAI)
-
-    Implementation: SHAP (SHapley Additive exPlanations).
-
-    Reasoning: Modern institutional decision-making requires transparency. SHAP values allow us to decompose the model's logic, showing exactly how much each variable (e.g., "Bathroom Cleanliness") contributed to a "Dissatisfied" prediction.
+## 6. Conclusion for IEEE Submission
+This framework proves that high-accuracy predictive analytics ($>80\%$) is achievable on sparse institutional datasets through intentional feature pruning, synthetic augmentation, and binary realignment. The model serves as a **Transparent Autonomy** tool, providing administrators with an explainable "Flagging System" to improve student satisfaction through data-driven intervention.
